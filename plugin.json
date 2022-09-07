@@ -1,0 +1,12 @@
+{
+    "ID":"4C3C2B8D2DEE11EDB9744CD577DDA563",
+    "ActionKeyword":"qc",
+    "Name":"QuickCodeViewer",
+    "Description":"Code 찾기",
+    "Author":"최훈철",
+    "Version":"1.0.0",
+    "Language":"python",
+    "Website":"https://www.gwp.or.kr",
+    "IcoPath": "Images\\dog_robot.png",
+    "ExecuteFileName":"main.py"
+  }
