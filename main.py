@@ -54,7 +54,7 @@ class QuickCode(Wox):
             pass
         else:
 
-            p = re.compile(f'{pstr}')
+            p = re.compile(f'.*{pstr}')
 
             #self.log_file.write(f'p:{p}\n')
 
