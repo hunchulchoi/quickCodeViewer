@@ -35,6 +35,7 @@
 
 from encodings import utf_8
 from json import load
+from msilib.schema import Error
 import re
 from wox import Wox, WoxAPI
 
@@ -57,19 +58,19 @@ class QuickCode(Wox):
                 pass
             result = {"Title": definition, 'SubTitle': None,
                       "IcoPath": "Images\\dog_robot.ico"}
-            if correction_flag:
-                result['SubTitle'] = f'Showing results for "{key}" (auto-corrected)'
-            else:
-                result['SubTitle'] = f'Showing results for "{key}"'
+            
             results.append(result)
 
     def query(self, key):
         """Overides Wox query function to capture user input"""
-        with open('code.json', 'r', encoding='utf-8') as data_file:
+        with open('CMN_CD.json', 'r', encoding='utf-8') as data_file:
             self.code = load(data_file)
         #words = self.edict['cb2b20da-9168-4e8e-8e8f-9b54e7d4444']
         #spell_correct = SpellCorrect(words)
         results = []
+
+        self.log_file =  open('test.txt', 'w', encoding='utf-8')
+
         try:
             self.search(key, results, 4)
             #self._add_result(definitions, results, key, 4)
@@ -82,40 +83,38 @@ class QuickCode(Wox):
             except KeyError:
                 pass
 
-        if not results:
-            pass
+        self.log_file.write(f'==================>results:{results}\n')
+        self.log_file.close()
 
         return results
 
 
     def search(self, pstr, results, max_result):
 
-        log_file =  open('text.txt', 'w', encoding='utf-8')
+        self.log_file.write(f'code:{len(self.code)}:{self.code[3]}\n')
 
-        log_file.write(f'code:{self.code}\n')
-
-        print(f'=====:{pstr}')
-        log_file.write(f'pstr:{pstr}\n')
+        self.log_file.write(f'pstr:{pstr}\n')
 
         if not pstr:
             pass
         else:
 
-            p = re.compile(f'[{pstr}]+')
+            p = re.compile(f'{pstr}')
 
-            print(f'p:{p}')
-            log_file.write(f'p:{p}\n')
+            self.log_file.write(f'p:{p}\n')
 
             for cd in self.code:
-                log_file.write(f'cd:{cd}\n')
-                log_file.write(f"p.match({cd['column']}):{p.match(cd['column'])}\n")
-                if p.match(cd['column']) or p.match(cd['name']):
-                    #result = {"Title": f"{cd['column']}({cd['name']})", 'SubTitle': f"{cd['code']} {cd['cd']}", "IcoPath": "Images\\dog_robot.ico"}
-                    result = {"Title": f"{cd['column']}", "SubTitle": f"{cd['code']}", "IcoPath": "Images\\dog_robot.ico"}
-                    results.append(result)
-
-            log_file.write(f'results:{results}\n')
-            log_file.close()
+                # self.log_file.write(f'{(p.match(cd["CSF_CD_NM"]) or p.match(cd["CMN_CD_NM"]))}, cd[CSF_CD_NM]:{cd["CSF_CD_NM"]}, cd[CMN_CD_NM]:{cd["CMN_CD_NM"]}\n')
+                if p.match(cd['CSF_CD_NM']) or p.match(cd['CMN_CD_NM']):
+                    self.log_file.write(f'if cd:{cd}\n')
+                    try:
+                        result = {"Title": f"{cd['CSF_CD_NM']}({cd['CMN_CSF_CD']})", "SubTitle": f"{cd['CMN_CD']} - {cd['CMN_CD_NM']}", "IcoPath": "Images\\dog_robot.ico"}
+                        self.log_file.write(f'result:{result}\n')
+                        results.append(result)
+                    except Error as err:
+                        print('에러에러에러', err)
+                        
+            self.log_file.write(f'results:{results}\n')
 
 
 if __name__ == "__main__":
